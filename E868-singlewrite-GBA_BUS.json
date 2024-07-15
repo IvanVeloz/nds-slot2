@@ -1,0 +1,18 @@
+{signal: [
+  {name: 'bus',       wave: 'p............'},
+  {name: 'phi',       wave: 'hlhlhlhlhlhlh'},
+  {name: 'wr',        wave: 'h...l.h......'},
+  {name: 'rd',        wave: 'h............'},
+  {name: 'cs',        wave: 'h.l...h......'},
+  {name: 'ad[15:0]',  wave: 'z3..4.z......', data: ['addr', 'data']},
+  {name: 'ad[23:16]', wave: 'z3..0.z......', data: ['addr', 'data']},
+  {name: 'cs2',       wave: 'h............'},
+],
+ head: {
+   text: ['tspan', 'NDS slot-2 timings']
+ },
+ foot: {
+   text: ['tspan', 'Mode: single write / Bus: GBA_BUS / EXMEMCNT: 0xE868'],
+ }
+}
+
