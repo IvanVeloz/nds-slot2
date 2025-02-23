@@ -22,8 +22,8 @@ jobs:
         run: |
           cd docker-wavedrom-cli
           mkdir ../diagrams
-          ./docker-wavedrom-cli.sh -f png ../*.json -d ../diagrams
-          ./docker-wavedrom-cli.sh -f svg ../*.json -d ../diagrams
+          ./docker-wavedrom-cli.sh -f png -d ../diagrams ../*.json
+          ./docker-wavedrom-cli.sh -f svg -d ../diagrams ../*.json
 
       - name: Upload generated PNGs as artifacts
         uses: actions/upload-artifact@v4
