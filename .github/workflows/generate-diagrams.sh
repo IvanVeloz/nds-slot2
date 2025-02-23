@@ -6,8 +6,8 @@ WDCLI=./docker-wavedrom-cli/docker-wavedrom-cli.sh
 mkdir -p diagrams
 $WDCLI -f png src/*.json
 $WDCLI -f svg src/*.json
-mv *.png ../diagrams
-mv *.svg ../diagrams
+mv src/*.png diagrams
+mv src/*.svg diagrams
 echo "Diagrams generated:"
 ls diagrams
 
