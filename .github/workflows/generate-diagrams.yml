@@ -1,0 +1,44 @@
+name: Generate PNGs with docker-wavedrom-cli
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  generate-pngs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository with submodules
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Grant execute permissions to the script
+        run: chmod +x docker-wavedrom-cli/docker-wavedrom-cli.sh
+
+      - name: Run docker-wavedrom-cli to generate diagrams
+        run: |
+          cd docker-wavedrom-cli
+          ./docker-wavedrom-cli.sh -f png ../*.json
+          ./docker-wavedrom-cli.sh -f svg ../*.json
+
+      - name: Upload generated PNGs as artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-pngs
+          path: "*.png"
+
+      - name: Upload generated SVGs as artifacts
+        uses: actions/upload-artifact@4
+        with:
+          name: generated-svgs
+          path: ".svg"
+
+      - name: Deploy PNGs and SVGs to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: diagrams
+

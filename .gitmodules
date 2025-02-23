@@ -1,0 +1,3 @@
+[submodule "docker-wavedrom-cli"]
+	path = docker-wavedrom-cli
+	url = https://github.com/mvonbun/docker-wavedrom-cli.git
