@@ -23,18 +23,21 @@ jobs:
           cd docker-wavedrom-cli
           ./docker-wavedrom-cli.sh -f png ../*.json
           ./docker-wavedrom-cli.sh -f svg ../*.json
+          mkdir diagrams
+          mv *.{png,svg} diagrams
 
       - name: Upload generated PNGs as artifacts
         uses: actions/upload-artifact@v4
         with:
           name: generated-pngs
-          path: "*.png"
+          path: "diagrams/*.png"
 
       - name: Upload generated SVGs as artifacts
         uses: actions/upload-artifact@v4
         with:
           name: generated-svgs
-          path: ".svg"
+          path: "diagrams/.svg"
+
 
       - name: Deploy PNGs and SVGs to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
