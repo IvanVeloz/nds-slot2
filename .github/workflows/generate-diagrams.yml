@@ -33,4 +33,4 @@ jobs:
         with:
           branch: gh-pages
           folder: diagrams
-
+          ssh-key: ${{ secrets.DEPLOY_KEY }}
