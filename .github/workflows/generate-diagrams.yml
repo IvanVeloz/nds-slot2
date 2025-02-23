@@ -24,7 +24,8 @@ jobs:
           ./docker-wavedrom-cli.sh -f png ../*.json
           ./docker-wavedrom-cli.sh -f svg ../*.json
           mkdir diagrams
-          mv *.{png,svg} diagrams
+          mv *.png diagrams
+          mv *.svg diagrams
 
       - name: Upload generated PNGs as artifacts
         uses: actions/upload-artifact@v4
