@@ -19,11 +19,11 @@ echo "Current group: $CURRENT_GROUP"
 pushd diagrams
 for f in *.png; do
   echo "Fixing ownership for $f"
-  chown $CURRENT_USER:$CURRENT_GROUP $f
+  sudo chown $CURRENT_USER:$CURRENT_GROUP $f
 done
 for f in *.svg; do
   echo "Fixing ownership for $f"
-  chown $CURRENT_USER:$CURRENT_GROUP $f
+  sudo chown $CURRENT_USER:$CURRENT_GROUP $f
 done
 popd
 
