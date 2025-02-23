@@ -1,0 +1,25 @@
+{signal: [
+  {name: 'bus',       wave: 'p............|..........'},
+  {name: 'phi',       wave: 'hlhlhlhlhlhlh|.lhlhlhlhl'},
+  {name: 'wr',        wave: 'h...l.h..l.h.|.l.h..l.h.'},
+  {name: 'rd',        wave: 'h............|..........'},
+  {name: 'cs',        wave: 'h.l.......h..|..........'},
+  {name: 'ad[15:0]',  wave: 'z3..4...4....|4....4..z..', data: ['addr', 'data 1','data 2','data 3','data 4']},
+  {name: 'ad[23:16]', wave: 'z3..0........|........z..', data: ['addr', 'data']},
+  {name: 'cs2',       wave: 'h........................'},
+],
+ head: {
+   text: ['tspan', 'NDS slot-2 timings']
+ },
+ foot: {
+   text: ['tspan', 'Mode: DMA write (interrupted) / Bus: GBA_BUS / EXMEMCNT: 0xE878'],
+ }
+}
+
+// Regardless of the value of EXMEMSTAT, the DMA takes one and a half PHI clock cycles
+// between each write.
+
+// The DMA write may be stalled by other bus accesses, as illustrated here with data 2.
+// Note that the stall took n plus half PHI clock cycles. This shows the slot 2 logic
+// is actually clocked at twice the frequency (i.e. the bus clock).  This has implications 
+// for edge-triggered logic in hardware definition languages.

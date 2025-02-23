@@ -1,0 +1,26 @@
+{signal: [
+  {                                           node: '.A.B..C'},
+  {name: 'vcc',       wave: 'l1|.|........'},
+  {name: 'phi',       wave: 'l.|.|........'},
+  {name: 'wr',        wave: 'l.|h|.x......', data: ['see powerup sequence']},
+  {name: 'rd',        wave: 'l.|h|.x......', data: ['see powerup sequence']},
+  {name: 'cs',        wave: 'l1|.|.x......', data: ['see powerup sequence']},
+  {name: 'ad[15:0]',  wave: 'l.|u|.2......', data: ['see powerup sequence']},
+  {name: 'ad[23:16]', wave: 'l.|u|.2......', data: ['see powerup sequence']},
+  {name: 'cs2',       wave: 'l1|.|........'},
+],
+  edge: [
+    'A+B 125ms', 'B+C 2075ms'
+  ],
+  head: {
+    text: ['tspan', 'NDS slot-2 timings'],
+  },
+  foot: {
+    text: ['tspan', 'Powerup timings'],
+  }
+}
+// At 0ms voltage on VCC starts ramping up. Simultaneously, CS and CS2 
+// ramp up with no delay.
+// At 2200ms, the splash screen is shown, with the health warning.
+// I don't know at which point the address lines stop being weak pull-ups. 
+// It's safest to assume they can be driven before CS is asserted.
