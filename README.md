@@ -5,7 +5,7 @@ This is intended to be an extension of [jojolebarjos/gba-cartridge](https://gith
 
 Additionally, nobody has done proper timing diagrams for the NDS (or GBA) slot. This is important for designing your own GBA/NDS peripherals. 
 
-I used the SignalTap logic analyzer for Alterra FPGAs to analyze the timings, then [WaveDrom](https://wavedrom.com) to create nice timing diagrams. The diagrams are presented at the bottom of this document.
+I used the SignalTap logic analyzer for Alterra FPGAs to analyze the timings, then [WaveDrom](https://wavedrom.com) to create nice timing diagrams. The diagrams are presented further down in this document.
 
 ## Nintendo DS timings vs. GBA timings
 
@@ -23,20 +23,6 @@ If you are working with an FPGA and using PHI as the clock source this situation
 
 ### Clock frequency
 The exact nominal clock frequency of the GBA is 16.77216MHz. The NDS is 33.513982MHz. When the NDS clock is divided in half the resould is 16.756991MHz. As you can see this is not exactly the same as the GBA, and in fact GBA games run slightly slower on the NDS. The difference is 1207ppm or ~0.12%. Considering common quartz oscillators have under 50ppm tolerances this may be a significant difference in some circumstances.
-
-## Electrical observations
-Working with these captures gave an oportunity to see what is going on with the bus, electrically. This is not well documented in other places like GBATEK because they focus on emulation.
-
-### The `AD` pins
-When `~CS1` and `~CS2` are deasserted (are high) the `AD` pins are left floating. They very are very slowly pulled up (takes tens of PHI clock cycles). This will look like confusing garbage on a logic analyzer, but on an oscilloscope you can see the voltage rising. I don't think there are pull-ups in the bus, I believe the signals are pulled up by leakage current from the NTR processor outputs.
-
-### The `IRQ` pin
-The `IRQ` pin is an input (signal goes into the NDS). It has a weak pull-up of approximately 50k, pulled up to 3.3V. I am not sure if it's a physical resistor or if is built into the NTR processor.
-
-On commercial cartridges the IRQ line is shorted to ground. I assume this is done to detect whether the cartridge is plugged in or not, and to allow interrupting then halting the processor if the cartridge is unplugged.
-
-### The `~CS` pins
-These pins are pulled up at start-up (presumably by an external pull-up), then they are actively driven (i.e. a low impedance output). See the powerup diagram for details.
 
 ## Read/write diagrams
 
@@ -57,13 +43,15 @@ They are also divided by `EXMEMCNT` setting (I use the GBATEK descriptions):
 
 All of the diagrams are drawn assuming PHI is set up at 16MHz.
 
+The diagrams only cover `~CS1` reads and writes (in GBA terms, the ROM, not the RAM). A textual description of `~CS2` access can be found in [jojolebarjos/gba-cartridge](https://github.com/jojolebarjos/gba-cartridge).
+
 I have not collected all possible combinations, but you can see what's available and extrapolate or capture on your own. Contributions, of course, are very welcome. Requests too.
 
 Without further ado, these are the timing diagrams. You can also download them [here](https://github.com/IvanVeloz/nds-slot2/tree/gh-pages). They may not be to scale relative to each other, depending on how wide your screen is.
 
 ### Powerup diagram
 
-**Powerup sequence**: at 0ms voltage on VCC starts ramping up. Simultaneously, `~CS` and `~CS2` ramp up with no delay, suggesting a strong pullup resistor. At 125ms the `~WR` and `~RD` lines are activated. The `AD` lines are weakly pulled up. At some point `~CS` and `~CS2` become actively driven, perhaps together with `~WR` and `~RD`. At 2200ms, the splash screen is shown, with the health warning. The NDS proceeds to seach for a GBA game or NDS accessory. Documentation for this is beyond the scope of this document, but I believe GBATEK has details on it.
+**Powerup sequence**: at 0ms voltage on VCC starts ramping up. Simultaneously, `~CS1` and `~CS2` ramp up with no delay, suggesting a strong pullup resistor. At 125ms the `~WR` and `~RD` lines are activated. The `AD` lines are weakly pulled up. At some point `~CS1` and `~CS2` become actively driven, perhaps together with `~WR` and `~RD`. At 2200ms, the splash screen is shown, with the health warning. The NDS proceeds to seach for a GBA game or NDS accessory. Documentation for this is beyond the scope of this document, but I believe GBATEK has details on it.
 
 ![Powerup timings](https://ivanveloz.github.io/nds-slot2/powerup.svg)
 
@@ -90,7 +78,7 @@ In this context, "write" means the NDS outputs information into the cartridge. N
 ![Write timings double write EXMEMCNT=E878](https://ivanveloz.github.io/nds-slot2/E878-doublewrite-GBA_BUS.svg)
 
 ### Read diagrams
-In this context, "read" means the cartridge outputs information into the NDS. The cartridge must **only** drive the `AD` bus when `~RD` is **low**. The data is latched by the NDS on the rising edge of `~RD`.
+In this context, "read" means the cartridge outputs information into the NDS. Make sure to read the electrical observations to avoid damaging the `AD` outputs.
 
 ![Read timings double read EXMEMCNT=E860](https://ivanveloz.github.io/nds-slot2/E860-doubleread-GBA_BUS.svg)
 
@@ -99,3 +87,30 @@ In this context, "read" means the cartridge outputs information into the NDS. Th
 ![Read timings single read EXMEMCNT=E864](https://ivanveloz.github.io/nds-slot2/E864-singleread-GBA_BUS.svg)
 
 ![Read timings single read EXMEMCNT=E868](https://ivanveloz.github.io/nds-slot2/E868-singleread-GBA_BUS.svg)
+
+## Electrical observations
+Working with these captures gave an oportunity to see what is going on with the bus, electrically. This is not well documented in other places like GBATEK because they focus on emulation.
+
+### The `~CS` pins
+
+These pins indicate when a transfer is about to happen. When `~CS1` is low, a 16-bit transfer will happen on `AD15` to `AD0`. When `~CS2` is low, an 8-bit transfer is done on `AD23` to `AD16`.
+
+These pins are pulled up at start-up (presumably by an external pull-up), then they are actively driven (i.e. a low impedance output). See the powerup diagram for details.
+
+### The `AD` pins
+When `~CS1` and `~CS2` are deasserted (are high) the `AD` pins are left floating. They very are very slowly pulled up (takes tens of PHI clock cycles). This will look like confusing garbage on a logic analyzer, but on an oscilloscope you can see the voltage rising. The pull-ups seem to be weak pull-ups of approximately 50k.
+
+It's only safe to drive the `AD15` to `AD0` pins when both `~RD` and `~CS1` are low. Do not drive these pins in any other circumstance.
+
+During `~CS1` reads the pins `AD23` to `AD16` **are driven low** by the NDS. Do not drive these pins from the cartridge side during `~CS1` reads. They can only be driven when both `~RD` and `~CS2` are low (i.e. during `~CS2` reads).
+
+The data is latched by the NDS on the rising edge of `~RD`.
+
+My suggestion  if you're using FPGAs is to have GPIO tri-state buffer driven directly by `~RD` and `~CSn` in combinational logic. This is good for both prototyping and production. Also, for prototyping, an even safer alternative to have 100 ohm resistors between the NDS and FPGA, at least until you get the combinational logic correct (the resistors will affect signal integrity).
+
+For microcontrollers, if you have the I/O, by far the safest option is to have a 74LVC125 tri-state buffer (or similar). Have some logic gates enable the 74LVC125 outputs only when `~RD` and `~CSn` are low. This is very safe for prototyping, then you can move on to a cheaper software-based solution.
+
+### The `IRQ` pin
+The `IRQ` pin is an input (signal goes into the NDS). It has a weak pull-up of approximately 50k, pulled up to 3.3V. I am not sure if it's a physical resistor or if is built into the NTR processor.
+
+On commercial cartridges the IRQ line is shorted to ground. I assume this is done to detect whether the cartridge is plugged in or not, and to allow interrupting then halting the processor if the cartridge is unplugged.
