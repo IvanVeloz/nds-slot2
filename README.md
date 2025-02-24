@@ -90,7 +90,7 @@ In this context, "write" means the NDS outputs information into the cartridge. N
 ![Write timings double write EXMEMCNT=E878](https://ivanveloz.github.io/nds-slot2/E878-doublewrite-GBA_BUS.svg)
 
 ### Read diagrams
-In this context, "read" means the cartridge outputs information into the NDS. The cartridge must only drive the `AD` bus when `~RD` is low. The data is latched by the NDS on the rising edge of `~RD`.
+In this context, "read" means the cartridge outputs information into the NDS. The cartridge must **only** drive the `AD` bus when `~RD` is **low**. The data is latched by the NDS on the rising edge of `~RD`.
 
 ![Read timings double read EXMEMCNT=E860](https://ivanveloz.github.io/nds-slot2/E860-doubleread-GBA_BUS.svg)
 
