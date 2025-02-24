@@ -85,7 +85,7 @@ In this context, "write" means the NDS outputs information into the cartridge. N
 ![Write timings double write EXMEMCNT=E870](https://ivanveloz.github.io/nds-slot2/E870-doublewrite-GBA_BUS.svg)
 
 ![Write timings DMA write EXMEMCNT=E878](https://ivanveloz.github.io/nds-slot2/E878-dmawrite-GBA_BUS.svg)
-DMA writes are often stalled when the processors perform bus access.
+**Note:** DMA writes are often stalled when the processors perform bus access.
 
 ![Write timings double write EXMEMCNT=E878](https://ivanveloz.github.io/nds-slot2/E878-doublewrite-GBA_BUS.svg)
 
