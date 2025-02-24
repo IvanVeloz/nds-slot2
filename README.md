@@ -17,9 +17,9 @@ The NDS allows some flexibility in the way the slot-2 is accesses. Specifically,
 The GBA's equivalent register to `EXMEMCNT` is the `WAITCNT` register. It has different timings (so these diagrams may not be accurate). I could do captures but I don't own a GBA. If you would like to donate one to the cause, please contact me at ([devel@ivanveloz.com](mailto:devel@ivanveloz.com)).
 
 ### Clock polarity inconsistencies
-In addition to what Martin has documented, I have found the NDS slot 2 has one unexpected inconsistency. The NDS slot 2 may start transfers on either the rising or falling edge of the clock. My suspicion is that the PHI output is being divided by two from the ~33MHz system clock, but the slot 2 bus logic is being clocked at ~33MHz, not ~16MHz like on the GBA. The consequence of this is that transfers may start on either the rising or falling edge.
+In addition to what Martin has documented, I have found the NDS slot 2 has one unexpected inconsistency. The NDS slot 2 may start transfers on either the rising or falling edge of the clock. My suspicion is that the PHI output is being divided by two from the ~33MHz system clock, but the slot 2 bus logic is being clocked at ~33MHz, not ~16MHz like on the GBA. The consequence of this is that transfers may start on either the rising or falling edge. In other words, the `PHI` signal on the diagrams below may look inverted in some transfers.
 
-If you are working with an FPGA and using PHI as the clock source this situation breaks your HDL code. The solution is to use a phase locked loop to (at least) double the clock. It also gives you an opportunity to add a phase offset, which may help you meet timing constraints. That is the setup I used to do these captures.
+If you are working with an FPGA and using PHI as the clock source this situation breaks your HDL code. The solution is to use a phase locked loop to (at least) double the clock. It also gives you an opportunity to add a phase offset, which may help you meet timing constraints. That is the setup I used to do these captures. The `BUS` signal on the diagrams shows how this clock could look like if you set it up.
 
 ### Clock frequency
 The exact nominal clock frequency of the GBA is 16.77216MHz. The NDS is 33.513982MHz. When the NDS clock is divided in half the resould is 16.756991MHz. As you can see this is not exactly the same as the GBA, and in fact GBA games run slightly slower on the NDS. The difference is 1207ppm or ~0.12%. Considering common quartz oscillators have under 50ppm tolerances this may be a significant difference in some circumstances.
@@ -47,13 +47,19 @@ By access type:
 - Double read (or write): a single 32-but value is read (or written).
 - DMA read (or write):  DMA is used to write a series of values.
 
-They are also divided by `EXMEMCNT` 
+They are also divided by `EXMEMCNT` setting (I use the GBATEK descriptions):
+- `E860`: first access 10 cycles, second access 6 cycles.
+- `E864`: first access 8 cycles, second access 6 cycles.
+- `E868`: first access 6 cycles, second access 6 cycles.
+- `E86C`: first access 18 cycles, second access 6 cycles.
+- `E870`: first access 10 cycles, second access 4 cycles.
+- `E878`: first access 6 cycles, second access 4 cycles.
 
 All of the diagrams are drawn assuming PHI is set up at 16MHz.
 
 I have not collected all possible combinations, but you can see what's available and extrapolate or capture on your own. Contributions, of course, are very welcome. Requests too.
 
-Without further ado, these are the timing diagrams. You can also download them [here](https://github.com/IvanVeloz/nds-slot2/tree/gh-pages).
+Without further ado, these are the timing diagrams. You can also download them [here](https://github.com/IvanVeloz/nds-slot2/tree/gh-pages). They may not be to scale relative to each other, depending on how wide your screen is.
 
 ### Powerup diagram
 
@@ -62,7 +68,7 @@ Without further ado, these are the timing diagrams. You can also download them [
 ![Powerup timings](https://ivanveloz.github.io/nds-slot2/powerup.svg)
 
 ### Write diagrams
-In this context, "write" means the NDS outputs information into the cartridge.
+In this context, "write" means the NDS outputs information into the cartridge. Note how the first single write word takes one less cycle than the first double write word.
 
 ![Write timings double write EXMEMCNT=E860](https://ivanveloz.github.io/nds-slot2/E860-doublewrite-GBA_BUS.svg)
 
@@ -79,6 +85,7 @@ In this context, "write" means the NDS outputs information into the cartridge.
 ![Write timings double write EXMEMCNT=E870](https://ivanveloz.github.io/nds-slot2/E870-doublewrite-GBA_BUS.svg)
 
 ![Write timings DMA write EXMEMCNT=E878](https://ivanveloz.github.io/nds-slot2/E878-dmawrite-GBA_BUS.svg)
+DMA writes are often stalled when the processors perform bus access.
 
 ![Write timings double write EXMEMCNT=E878](https://ivanveloz.github.io/nds-slot2/E878-doublewrite-GBA_BUS.svg)
 
