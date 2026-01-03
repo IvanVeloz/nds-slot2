@@ -22,7 +22,7 @@ In addition to what Martin has documented, I have found the NDS slot 2 has one u
 If you are working with an FPGA and using PHI as the clock source this situation breaks your HDL code. The solution is to use a phase locked loop to (at least) double the clock. It also gives you an opportunity to add a phase offset, which may help you meet timing constraints. That is the setup I used to do these captures. The `BUS` signal on the diagrams shows how this clock could look like if you set it up.
 
 ### Clock frequency
-The exact nominal clock frequency of the GBA is 16.77216MHz. The NDS is 33.513982MHz. When the NDS clock is divided in half the resould is 16.756991MHz. As you can see this is not exactly the same as the GBA, and in fact GBA games run slightly slower on the NDS. The difference is 1207ppm or ~0.12%. Considering common quartz oscillators have under 50ppm tolerances this may be a significant difference in some circumstances.
+The exact nominal clock frequency of the GBA is 16.77216MHz. The NDS is 33.513982MHz. The NDS's frequency is not exactly double: if the frequency is divided in half the result is 16.756991MHz. In fact GBA games run slightly slower on the NDS. The difference is 1207ppm or ~0.12%. Considering common quartz oscillators have under 50ppm tolerances this may be a significant difference in some applications.
 
 ## Read/write diagrams
 
