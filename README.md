@@ -14,7 +14,7 @@ There are subdle differences on the NDS and GBA timings. You can find the full c
 ### The use of `EXMEMCNT`
 The NDS allows some flexibility in the way the slot-2 is accesses. Specifically, it allows you to control how fast (how many cycles) a read or write should take. This is all controlled through the `EXMEMCNT` register. This register is very well documented on the GBATEK reference document. In this publication I have collected data for multiple `EXMEMCNT` configurations. 
 
-The GBA's equivalent register to `EXMEMCNT` is the `WAITCNT` register. It has different timings (so these diagrams may not be accurate). I could do captures but I don't own a GBA. If you would like to donate one to the cause, please contact me at ([devel@ivanveloz.com](mailto:devel@ivanveloz.com)).
+The GBA's equivalent register to `EXMEMCNT` is the `WAITCNT` register. It has different timings (so these diagrams may not be accurate). I could do captures but I don't own a GBA. If you would like to have these captures taken then submit an issue and bother me until I buy a GBA.
 
 ### Clock polarity inconsistencies
 In addition to what Martin has documented, I have found the NDS slot 2 has one unexpected inconsistency. The NDS slot 2 may start transfers on either the rising or falling edge of the clock. My suspicion is that the PHI output is being divided by two from the ~33MHz system clock, but the slot 2 bus logic is being clocked at ~33MHz, not ~16MHz like on the GBA. The consequence of this is that transfers may start on either the rising or falling edge. In other words, the `PHI` signal on the diagrams below may look inverted in some transfers.
